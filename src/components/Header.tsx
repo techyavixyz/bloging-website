@@ -4,6 +4,7 @@ import { PenTool, Home, User, BookOpen, Settings } from 'lucide-react';
 
 const Header: React.FC = () => {
   const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
   
   const isActive = (path: string) => location.pathname === path;
   
@@ -41,39 +42,53 @@ const Header: React.FC = () => {
               <span>Blog</span>
             </Link>
             
-            <Link
-              to="/admin"
-              className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-colors ${
-                (isActive('/admin') || location.pathname.startsWith('/admin'))
-                  ? 'bg-primary-50 text-primary-700' 
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-            >
-              <User className="w-4 h-4" />
-              <span>Dashboard</span>
-            </Link>
-            
-            <Link
-              to="/admin/settings"
-              className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-colors ${
-                isActive('/admin/settings')
-                  ? 'bg-primary-50 text-primary-700' 
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-            >
-              <Settings className="w-4 h-4" />
-              <span>Settings</span>
-            </Link>
+            {isAdminRoute && (
+              <>
+                <Link
+                  to="/admin"
+                  className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-colors ${
+                    isActive('/admin')
+                      ? 'bg-primary-50 text-primary-700' 
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  <User className="w-4 h-4" />
+                  <span>Dashboard</span>
+                </Link>
+                
+                <Link
+                  to="/admin/settings"
+                  className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-colors ${
+                    isActive('/admin/settings')
+                      ? 'bg-primary-50 text-primary-700' 
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  <Settings className="w-4 h-4" />
+                  <span>Settings</span>
+                </Link>
+              </>
+            )}
           </nav>
           
           <div className="flex items-center space-x-3">
-            <Link
-              to="/admin/new-post"
-              className="btn-primary flex items-center space-x-2"
-            >
-              <PenTool className="w-4 h-4" />
-              <span>Write</span>
-            </Link>
+            {isAdminRoute ? (
+              <Link
+                to="/admin/new-post"
+                className="btn-primary flex items-center space-x-2"
+              >
+                <PenTool className="w-4 h-4" />
+                <span>Write</span>
+              </Link>
+            ) : (
+              <Link
+                to="/admin"
+                className="btn-primary flex items-center space-x-2"
+              >
+                <User className="w-4 h-4" />
+                <span>Admin</span>
+              </Link>
+            )}
           </div>
         </div>
       </div>

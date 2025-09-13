@@ -1,15 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { Linkedin, Github, Save, ExternalLink } from 'lucide-react';
+import { Linkedin, Github, Save, ExternalLink, Upload, X } from 'lucide-react';
+import { apiService } from '../services/api';
 
 const IntegrationPage: React.FC = () => {
   const [formData, setFormData] = useState({
-    name: 'John Doe',
-    bio: 'Full-stack developer passionate about React, TypeScript, and modern web technologies.',
-    linkedin_url: 'https://linkedin.com/in/johndoe',
-    github_url: 'https://github.com/johndoe',
+    name: '',
+    bio: '',
+    avatar: '',
+    linkedinUrl: '',
+    githubUrl: '',
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  const loadProfile = async () => {
+    try {
+      const profile = await apiService.getUserProfile();
+      setFormData({
+        name: profile.name || '',
+        bio: profile.bio || '',
+        avatar: profile.avatar || '',
+        linkedinUrl: profile.linkedinUrl || '',
+        githubUrl: profile.githubUrl || '',
+      });
+    } catch (error) {
+      console.error('Failed to load profile:', error);
+    } finally {
+      setInitialLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,8 +41,7 @@ const IntegrationPage: React.FC = () => {
     setMessage('');
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await apiService.updateUserProfile(formData);
       setMessage('Profile updated successfully!');
     } catch (error) {
       setMessage('Failed to update profile. Please try again.');
@@ -34,6 +57,30 @@ const IntegrationPage: React.FC = () => {
     });
   };
 
+  const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // In a real app, you'd upload to a service like Cloudinary or AWS S3
+      // For demo purposes, we'll use a placeholder URL
+      const placeholderUrl = 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150';
+      setFormData({ ...formData, avatar: placeholderUrl });
+    }
+  };
+
+  const handleRemoveAvatar = () => {
+    setFormData({ ...formData, avatar: '' });
+  };
+
+  if (initialLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -49,6 +96,44 @@ const IntegrationPage: React.FC = () => {
             <form onSubmit={handleSubmit} className="card space-y-6">
               <h2 className="text-xl font-semibold text-gray-900">Profile Information</h2>
               
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Profile Picture
+                </label>
+                
+                {formData.avatar ? (
+                  <div className="relative inline-block">
+                    <img
+                      src={formData.avatar}
+                      alt="Profile"
+                      className="w-24 h-24 rounded-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveAvatar}
+                      className="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center cursor-pointer hover:border-primary-400 hover:bg-primary-50 transition-colors">
+                    <label htmlFor="avatar-upload" className="cursor-pointer">
+                      <Upload className="w-6 h-6 text-gray-400" />
+                    </label>
+                  </div>
+                )}
+                
+                <input
+                  id="avatar-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarUpload}
+                  className="hidden"
+                />
+                <p className="text-sm text-gray-500 mt-2">Click to upload a profile picture</p>
+              </div>
+
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                   Display Name
@@ -80,7 +165,7 @@ const IntegrationPage: React.FC = () => {
               </div>
 
               <div>
-                <label htmlFor="linkedin_url" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="linkedinUrl" className="block text-sm font-medium text-gray-700 mb-2">
                   <div className="flex items-center space-x-2">
                     <Linkedin className="w-4 h-4 text-blue-600" />
                     <span>LinkedIn Profile URL</span>
@@ -88,9 +173,9 @@ const IntegrationPage: React.FC = () => {
                 </label>
                 <input
                   type="url"
-                  id="linkedin_url"
-                  name="linkedin_url"
-                  value={formData.linkedin_url}
+                  id="linkedinUrl"
+                  name="linkedinUrl"
+                  value={formData.linkedinUrl}
                   onChange={handleChange}
                   placeholder="https://linkedin.com/in/yourprofile"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
@@ -98,7 +183,7 @@ const IntegrationPage: React.FC = () => {
               </div>
 
               <div>
-                <label htmlFor="github_url" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="githubUrl" className="block text-sm font-medium text-gray-700 mb-2">
                   <div className="flex items-center space-x-2">
                     <Github className="w-4 h-4 text-gray-900" />
                     <span>GitHub Profile URL</span>
@@ -106,9 +191,9 @@ const IntegrationPage: React.FC = () => {
                 </label>
                 <input
                   type="url"
-                  id="github_url"
-                  name="github_url"
-                  value={formData.github_url}
+                  id="githubUrl"
+                  name="githubUrl"
+                  value={formData.githubUrl}
                   onChange={handleChange}
                   placeholder="https://github.com/yourusername"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
@@ -141,7 +226,7 @@ const IntegrationPage: React.FC = () => {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Preview</h3>
               <div className="flex items-start space-x-4">
                 <img
-                  src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150"
+                  src={formData.avatar || 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150'}
                   alt={formData.name}
                   className="w-16 h-16 rounded-full object-cover"
                 />
@@ -151,9 +236,9 @@ const IntegrationPage: React.FC = () => {
                     {formData.bio || 'Your bio will appear here...'}
                   </p>
                   <div className="flex space-x-2 mt-3">
-                    {formData.linkedin_url && (
+                    {formData.linkedinUrl && (
                       <a
-                        href={formData.linkedin_url}
+                        href={formData.linkedinUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:text-blue-700"
@@ -161,9 +246,9 @@ const IntegrationPage: React.FC = () => {
                         <Linkedin className="w-4 h-4" />
                       </a>
                     )}
-                    {formData.github_url && (
+                    {formData.githubUrl && (
                       <a
-                        href={formData.github_url}
+                        href={formData.githubUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-gray-900 hover:text-gray-700"

@@ -1,15 +1,43 @@
-import { mockPosts, mockAuthor } from '../data/mockData';
+import { mockPosts } from '../data/mockData';
 import { BlogPost } from '../types/blog';
 
 // In-memory storage for posts (in a real app, this would be a database)
 let posts: BlogPost[] = [...mockPosts];
 let nextId = posts.length + 1;
 
+// User profile storage
+let userProfile = {
+  id: '1',
+  name: 'John Doe',
+  avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150',
+  bio: 'Full-stack developer passionate about React, TypeScript, and modern web technologies.',
+  linkedinUrl: 'https://linkedin.com/in/johndoe',
+  githubUrl: 'https://github.com/johndoe'
+};
 class ApiService {
+  async getUserProfile() {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    return userProfile;
+  }
+
   async updateUserProfile(data: any) {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500));
-    return { ...mockAuthor, ...data };
+    userProfile = { ...userProfile, ...data };
+    
+    // Update all posts with new author info
+    posts = posts.map(post => ({
+      ...post,
+      author: {
+        ...post.author,
+        name: userProfile.name,
+        avatar: userProfile.avatar,
+        bio: userProfile.bio,
+        linkedinUrl: userProfile.linkedinUrl
+      }
+    }));
+    
+    return userProfile;
   }
 
   // Posts
@@ -33,7 +61,7 @@ class ApiService {
     const newPost = {
       id: nextId.toString(),
       ...data,
-      author: mockAuthor,
+      author: userProfile,
       publishedAt: data.isPublished ? new Date() : null,
       likes: 0,
       comments: 0,

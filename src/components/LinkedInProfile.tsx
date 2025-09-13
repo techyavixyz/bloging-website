@@ -1,8 +1,28 @@
 import React from 'react';
 import { Linkedin, ExternalLink, MapPin, Users } from 'lucide-react';
-import { mockAuthor } from '../data/mockData';
+import { apiService } from '../services/api';
 
 const LinkedInProfile: React.FC = () => {
+  const [profile, setProfile] = React.useState({
+    name: 'John Doe',
+    avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150',
+    bio: 'Full-stack developer passionate about React, TypeScript, and modern web technologies.',
+    linkedinUrl: 'https://linkedin.com/in/johndoe'
+  });
+
+  React.useEffect(() => {
+    loadProfile();
+  }, []);
+
+  const loadProfile = async () => {
+    try {
+      const userProfile = await apiService.getUserProfile();
+      setProfile(userProfile);
+    } catch (error) {
+      console.error('Failed to load profile:', error);
+    }
+  };
+
   return (
     <div className="card">
       <div className="flex items-center justify-between mb-4">
@@ -12,14 +32,14 @@ const LinkedInProfile: React.FC = () => {
       
       <div className="flex items-start space-x-4">
         <img
-          src={mockAuthor.avatar}
-          alt={mockAuthor.name}
+          src={profile.avatar}
+          alt={profile.name}
           className="w-16 h-16 rounded-full object-cover"
         />
         
         <div className="flex-1">
-          <h4 className="font-semibold text-gray-900">{mockAuthor.name}</h4>
-          <p className="text-sm text-gray-600 mb-2">{mockAuthor.bio}</p>
+          <h4 className="font-semibold text-gray-900">{profile.name}</h4>
+          <p className="text-sm text-gray-600 mb-2">{profile.bio}</p>
           
           <div className="flex items-center space-x-4 text-sm text-gray-500 mb-3">
             <div className="flex items-center space-x-1">
@@ -34,7 +54,7 @@ const LinkedInProfile: React.FC = () => {
           
           <div className="flex space-x-2">
             <a
-              href={mockAuthor.linkedinUrl}
+              href={profile.linkedinUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center space-x-1 text-sm bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors"

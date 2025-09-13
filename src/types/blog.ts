@@ -6,7 +6,6 @@ export interface BlogPost {
   thumbnail?: string;
   tags: string[];
   author: Author;
-  publishedAt: Date;
   publishedAt: Date | null;
   readTime: number;
   likes: number;
@@ -21,6 +20,7 @@ export interface Author {
   avatar: string;
   bio: string;
   linkedinUrl?: string;
+  githubUrl?: string;
 }
 
 export interface Comment {

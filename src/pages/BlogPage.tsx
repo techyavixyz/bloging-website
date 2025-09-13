@@ -1,28 +1,60 @@
 import React, { useState, useMemo } from 'react';
 import FeedToolbar from '../components/blog/FeedToolbar';
 import PostGrid from '../components/blog/PostGrid';
-import { mockPosts } from '../data/mockData';
+import { apiService } from '../services/api';
+import { BlogPost } from '../types/blog';
 
 const BlogPage: React.FC = () => {
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'newest' | 'popular'>('newest');
 
+  React.useEffect(() => {
+    loadPosts();
+  }, []);
+
+  const loadPosts = async () => {
+    try {
+      const publishedPosts = await apiService.getPosts();
+      setPosts(publishedPosts);
+    } catch (error) {
+      console.error('Failed to load posts:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const filteredAndSortedPosts = useMemo(() => {
-    let filtered = mockPosts.filter(post =>
+    let filtered = posts.filter(post =>
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
     if (sortBy === 'newest') {
-      filtered.sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime());
+      filtered.sort((a, b) => {
+        const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+        const dateB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+        return dateB - dateA;
+      });
     } else {
       filtered.sort((a, b) => b.likes - a.likes);
     }
 
     return filtered;
-  }, [searchQuery, sortBy]);
+  }, [posts, searchQuery, sortBy]);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading articles...</p>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

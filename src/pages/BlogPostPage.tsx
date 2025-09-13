@@ -3,11 +3,41 @@ import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Heart, MessageCircle, Bookmark, Share2, Clock } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { mockPosts } from '../data/mockData';
+import { apiService } from '../services/api';
+import { BlogPost } from '../types/blog';
 
 const BlogPostPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const post = mockPosts.find(p => p.id === id);
+  const [post, setPost] = React.useState<BlogPost | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    if (id) {
+      loadPost(id);
+    }
+  }, [id]);
+
+  const loadPost = async (postId: string) => {
+    try {
+      const postData = await apiService.getPost(postId);
+      setPost(postData || null);
+    } catch (error) {
+      console.error('Failed to load post:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading post...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!post) {
     return (
@@ -67,7 +97,7 @@ const BlogPostPage: React.FC = () => {
               <div>
                 <p className="font-medium text-gray-900">{post.author.name}</p>
                 <div className="flex items-center space-x-2 text-sm text-gray-500">
-                  <span>{post.publishedAt.toLocaleDateString()}</span>
+                  <span>{post.publishedAt ? new Date(post.publishedAt).toLocaleDateString() : 'Draft'}</span>
                   <span>•</span>
                   <div className="flex items-center space-x-1">
                     <Clock className="w-3 h-3" />
