@@ -9,6 +9,8 @@ const IntegrationPage: React.FC = () => {
     avatar: '',
     linkedinUrl: '',
     githubUrl: '',
+    location: '',
+    connections: '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -27,6 +29,8 @@ const IntegrationPage: React.FC = () => {
         avatar: profile.avatar || '',
         linkedinUrl: profile.linkedinUrl || '',
         githubUrl: profile.githubUrl || '',
+        location: profile.location || '',
+        connections: profile.connections || '',
       });
     } catch (error) {
       console.error('Failed to load profile:', error);
@@ -200,6 +204,36 @@ const IntegrationPage: React.FC = () => {
                 />
               </div>
 
+              <div>
+                <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
+                  Location
+                </label>
+                <input
+                  type="text"
+                  id="location"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  placeholder="e.g., San Francisco, CA"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="connections" className="block text-sm font-medium text-gray-700 mb-2">
+                  LinkedIn Connections
+                </label>
+                <input
+                  type="text"
+                  id="connections"
+                  name="connections"
+                  value={formData.connections}
+                  onChange={handleChange}
+                  placeholder="e.g., 500+"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+
               {message && (
                 <div className={`p-3 rounded-lg text-sm ${
                   message.includes('successfully') 
@@ -226,7 +260,7 @@ const IntegrationPage: React.FC = () => {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Preview</h3>
               <div className="flex items-start space-x-4">
                 <img
-                  src={formData.avatar || 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150'}
+                  src={formData.avatar || 'https://via.placeholder.com/150x150?text=No+Image'}
                   alt={formData.name}
                   className="w-16 h-16 rounded-full object-cover"
                 />
@@ -235,6 +269,22 @@ const IntegrationPage: React.FC = () => {
                   <p className="text-sm text-gray-600 mt-1">
                     {formData.bio || 'Your bio will appear here...'}
                   </p>
+                  {(formData.location || formData.connections) && (
+                    <div className="flex items-center space-x-4 text-sm text-gray-500 mt-2">
+                      {formData.location && (
+                        <div className="flex items-center space-x-1">
+                          <span>📍</span>
+                          <span>{formData.location}</span>
+                        </div>
+                      )}
+                      {formData.connections && (
+                        <div className="flex items-center space-x-1">
+                          <span>👥</span>
+                          <span>{formData.connections} connections</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
                   <div className="flex space-x-2 mt-3">
                     {formData.linkedinUrl && (
                       <a

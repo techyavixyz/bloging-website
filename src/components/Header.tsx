@@ -72,21 +72,13 @@ const Header: React.FC = () => {
           </nav>
           
           <div className="flex items-center space-x-3">
-            {isAdminRoute ? (
+            {isAdminRoute && (
               <Link
                 to="/admin/new-post"
                 className="btn-primary flex items-center space-x-2"
               >
                 <PenTool className="w-4 h-4" />
                 <span>Write</span>
-              </Link>
-            ) : (
-              <Link
-                to="/admin"
-                className="btn-primary flex items-center space-x-2"
-              >
-                <User className="w-4 h-4" />
-                <span>Admin</span>
               </Link>
             )}
           </div>

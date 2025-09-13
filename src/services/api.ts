@@ -12,7 +12,9 @@ let userProfile = {
   avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150',
   bio: 'Full-stack developer passionate about React, TypeScript, and modern web technologies.',
   linkedinUrl: 'https://linkedin.com/in/johndoe',
-  githubUrl: 'https://github.com/johndoe'
+  githubUrl: 'https://github.com/johndoe',
+  location: 'San Francisco, CA',
+  connections: '500+'
 };
 class ApiService {
   async getUserProfile() {
@@ -33,7 +35,9 @@ class ApiService {
         name: userProfile.name,
         avatar: userProfile.avatar,
         bio: userProfile.bio,
-        linkedinUrl: userProfile.linkedinUrl
+        linkedinUrl: userProfile.linkedinUrl,
+        location: userProfile.location,
+        connections: userProfile.connections
       }
     }));
     

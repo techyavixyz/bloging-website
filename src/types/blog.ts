@@ -21,6 +21,8 @@ export interface Author {
   bio: string;
   linkedinUrl?: string;
   githubUrl?: string;
+  location?: string;
+  connections?: string;
 }
 
 export interface Comment {

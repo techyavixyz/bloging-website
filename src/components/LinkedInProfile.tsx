@@ -7,7 +7,9 @@ const LinkedInProfile: React.FC = () => {
     name: 'John Doe',
     avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150',
     bio: 'Full-stack developer passionate about React, TypeScript, and modern web technologies.',
-    linkedinUrl: 'https://linkedin.com/in/johndoe'
+    linkedinUrl: 'https://linkedin.com/in/johndoe',
+    location: 'San Francisco, CA',
+    connections: '500+'
   });
 
   React.useEffect(() => {
@@ -44,11 +46,11 @@ const LinkedInProfile: React.FC = () => {
           <div className="flex items-center space-x-4 text-sm text-gray-500 mb-3">
             <div className="flex items-center space-x-1">
               <MapPin className="w-4 h-4" />
-              <span>San Francisco, CA</span>
+              <span>{profile.location || 'Location not set'}</span>
             </div>
             <div className="flex items-center space-x-1">
               <Users className="w-4 h-4" />
-              <span>500+ connections</span>
+              <span>{profile.connections || '0'} connections</span>
             </div>
           </div>
           
