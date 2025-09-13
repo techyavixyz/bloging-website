@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { PenTool, Home, User, BookOpen } from 'lucide-react';
+import { PenTool, Home, User, BookOpen, LogIn, LogOut, Settings } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 const Header: React.FC = () => {
   const location = useLocation();
+  const { user, logout } = useAuth();
   
   const isActive = (path: string) => location.pathname === path;
   
@@ -42,25 +44,60 @@ const Header: React.FC = () => {
             </Link>
             
             <Link
-              to="/author"
+              to={user ? "/author" : "/login"}
               className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-colors ${
-                isActive('/author') 
+                (isActive('/author') || isActive('/integration'))
                   ? 'bg-primary-50 text-primary-700' 
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
               }`}
             >
               <User className="w-4 h-4" />
-              <span>Author</span>
+              <span>{user ? 'Dashboard' : 'Login'}</span>
             </Link>
+            
+            {user && (
+              <Link
+                to="/integration"
+                className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-colors ${
+                  isActive('/integration')
+                    ? 'bg-primary-50 text-primary-700' 
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                <Settings className="w-4 h-4" />
+                <span>Settings</span>
+              </Link>
+            )}
           </nav>
           
-          <Link
-            to="/author/new-post"
-            className="btn-primary flex items-center space-x-2"
-          >
-            <PenTool className="w-4 h-4" />
-            <span>Write</span>
-          </Link>
+          <div className="flex items-center space-x-3">
+            {user ? (
+              <>
+                <Link
+                  to="/author/new-post"
+                  className="btn-primary flex items-center space-x-2"
+                >
+                  <PenTool className="w-4 h-4" />
+                  <span>Write</span>
+                </Link>
+                <button
+                  onClick={logout}
+                  className="text-gray-600 hover:text-gray-900 p-2"
+                  title="Logout"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </>
+            ) : (
+              <Link
+                to="/login"
+                className="btn-primary flex items-center space-x-2"
+              >
+                <LogIn className="w-4 h-4" />
+                <span>Login</span>
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </header>

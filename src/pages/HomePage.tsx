@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, BookOpen, Users, TrendingUp } from 'lucide-react';
+import { ArrowRight, BookOpen, Github } from 'lucide-react';
 import LinkedInProfile from '../components/LinkedInProfile';
 import PostCard from '../components/blog/PostCard';
 import { mockPosts } from '../data/mockData';
@@ -44,27 +44,25 @@ const HomePage: React.FC = () => {
       {/* Stats Section */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mx-auto mb-4">
-                <BookOpen className="w-8 h-8 text-primary-600" />
-              </div>
-              <h3 className="text-3xl font-bold text-gray-900 mb-2">1,000+</h3>
-              <p className="text-gray-600">Articles Published</p>
-            </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mx-auto mb-4">
-                <Users className="w-8 h-8 text-green-600" />
-              </div>
-              <h3 className="text-3xl font-bold text-gray-900 mb-2">50K+</h3>
-              <p className="text-gray-600">Active Readers</p>
-            </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center w-16 h-16 bg-orange-100 rounded-full mx-auto mb-4">
-                <TrendingUp className="w-8 h-8 text-orange-600" />
-              </div>
-              <h3 className="text-3xl font-bold text-gray-900 mb-2">500+</h3>
-              <p className="text-gray-600">Authors</p>
+          <div className="text-center max-w-3xl mx-auto">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">About This Blog</h2>
+            <p className="text-lg text-gray-600 mb-8">
+              Welcome to my personal blog where I share insights, tutorials, and thoughts about 
+              web development, technology, and software engineering. This is a self-hosted platform 
+              built with modern web technologies.
+            </p>
+            <div className="flex items-center justify-center space-x-6">
+              <a
+                href="https://github.com/yourusername/your-blog-repo"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                <Github className="w-5 h-5" />
+                <span>View Source Code</span>
+              </a>
+              <div className="w-px h-6 bg-gray-300"></div>
+              <span className="text-sm text-gray-500">Self-hosted • Open Source</span>
             </div>
           </div>
         </div>
