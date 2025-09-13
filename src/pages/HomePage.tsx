@@ -30,7 +30,7 @@ const HomePage: React.FC = () => {
                 <ArrowRight className="w-5 h-5" />
               </Link>
               <Link
-                to="/author/new-post"
+                to="/admin/new-post"
                 className="btn-secondary flex items-center space-x-2 text-lg px-8 py-3"
               >
                 <BookOpen className="w-5 h-5" />
@@ -122,7 +122,7 @@ const HomePage: React.FC = () => {
             Join thousands of writers who are already sharing their expertise and building their audience.
           </p>
           <Link
-            to="/author/new-post"
+            to="/admin/new-post"
             className="inline-flex items-center space-x-2 bg-white text-primary-600 px-8 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors"
           >
             <BookOpen className="w-5 h-5" />

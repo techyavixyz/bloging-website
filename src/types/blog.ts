@@ -7,6 +7,7 @@ export interface BlogPost {
   tags: string[];
   author: Author;
   publishedAt: Date;
+  publishedAt: Date | null;
   readTime: number;
   likes: number;
   comments: number;

@@ -42,9 +42,9 @@ const Header: React.FC = () => {
             </Link>
             
             <Link
-              to="/author"
+              to="/admin"
               className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-colors ${
-                (isActive('/author') || isActive('/integration'))
+                (isActive('/admin') || location.pathname.startsWith('/admin'))
                   ? 'bg-primary-50 text-primary-700' 
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
               }`}
@@ -54,9 +54,9 @@ const Header: React.FC = () => {
             </Link>
             
             <Link
-              to="/integration"
+              to="/admin/settings"
               className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-colors ${
-                isActive('/integration')
+                isActive('/admin/settings')
                   ? 'bg-primary-50 text-primary-700' 
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
               }`}
@@ -68,7 +68,7 @@ const Header: React.FC = () => {
           
           <div className="flex items-center space-x-3">
             <Link
-              to="/author/new-post"
+              to="/admin/new-post"
               className="btn-primary flex items-center space-x-2"
             >
               <PenTool className="w-4 h-4" />

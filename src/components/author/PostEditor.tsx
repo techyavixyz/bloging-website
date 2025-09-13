@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Save, Eye, Upload, Link as LinkIcon, AtSign, Bell } from 'lucide-react';
+import { apiService } from '../../services/api';
 import AudienceSelector from './AudienceSelector';
 import ThumbnailUpload from './ThumbnailUpload';
 import MarkdownTabs from './MarkdownTabs';
@@ -10,44 +11,136 @@ import Toolbar from './Toolbar';
 
 const PostEditor: React.FC = () => {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const isEditing = Boolean(id);
+  
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [excerpt, setExcerpt] = useState('');
   const [thumbnail, setThumbnail] = useState<string>('');
   const [tags, setTags] = useState<string[]>([]);
   const [audience, setAudience] = useState<'everyone' | 'private' | 'subscribers'>('everyone');
   const [activeTab, setActiveTab] = useState<'write' | 'preview'>('write');
   const [notifications, setNotifications] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const handleSave = () => {
+  React.useEffect(() => {
+    if (isEditing && id) {
+      loadPost(id);
+    }
+  }, [id, isEditing]);
+
+  const loadPost = async (postId: string) => {
+    setLoading(true);
+    try {
+      const post = await apiService.getPost(postId);
+      if (post) {
+        setTitle(post.title);
+        setContent(post.content);
+        setExcerpt(post.excerpt);
+        setThumbnail(post.thumbnail || '');
+        setTags(post.tags);
+        setAudience(post.audience);
+      }
+    } catch (error) {
+      console.error('Failed to load post:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateExcerpt = (content: string) => {
+    // Remove markdown formatting and get first 160 characters
+    const plainText = content
+      .replace(/#{1,6}\s+/g, '') // Remove headers
+      .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold
+      .replace(/\*(.*?)\*/g, '$1') // Remove italic
+      .replace(/`(.*?)`/g, '$1') // Remove inline code
+      .replace(/\[(.*?)\]\(.*?\)/g, '$1') // Remove links
+      .replace(/\n/g, ' ') // Replace newlines with spaces
+      .trim();
+    
+    return plainText.length > 160 ? plainText.substring(0, 160) + '...' : plainText;
+  };
+
+  const handleSave = async (publish = false) => {
+    if (!title.trim()) {
+      alert('Please enter a title for your post');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const postData = {
+        title: title.trim(),
+        content,
+        excerpt: excerpt || generateExcerpt(content),
+        thumbnail,
+        tags,
+        audience,
+        isPublished: publish
+      };
+
+      if (isEditing && id) {
+        await apiService.updatePost(id, postData);
+      } else {
+        await apiService.createPost(postData);
+      }
+
+      navigate('/admin');
+    } catch (error) {
+      console.error('Failed to save post:', error);
+      alert('Failed to save post. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSaveDraft = () => {
     // Save logic here
-    console.log('Saving post...', { title, content, thumbnail, tags, audience });
+    handleSave(false);
   };
 
   const handlePublish = () => {
     // Publish logic here
-    console.log('Publishing post...', { title, content, thumbnail, tags, audience });
-    navigate('/author');
+    handleSave(true);
   };
+
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="text-center py-16">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading post...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold text-gray-900">Create New Post</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {isEditing ? 'Edit Post' : 'Create New Post'}
+          </h1>
           <div className="flex items-center space-x-3">
             <button
-              onClick={handleSave}
-              className="btn-secondary flex items-center space-x-2"
+              onClick={handleSaveDraft}
+              disabled={saving}
+              className="btn-secondary flex items-center space-x-2 disabled:opacity-50"
             >
               <Save className="w-4 h-4" />
-              <span>Save Draft</span>
+              <span>{saving ? 'Saving...' : 'Save Draft'}</span>
             </button>
             <button
               onClick={handlePublish}
-              className="btn-primary flex items-center space-x-2"
+              disabled={saving}
+              className="btn-primary flex items-center space-x-2 disabled:opacity-50"
             >
               <Eye className="w-4 h-4" />
-              <span>Publish</span>
+              <span>{saving ? 'Publishing...' : 'Publish'}</span>
             </button>
           </div>
         </div>
@@ -83,6 +176,23 @@ const PostEditor: React.FC = () => {
           />
           <div className="text-right text-sm text-gray-400 mt-1">
             {title.length}/250
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Excerpt (optional)
+          </label>
+          <textarea
+            placeholder="Brief description of your post... (will be auto-generated if left empty)"
+            value={excerpt}
+            onChange={(e) => setExcerpt(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            rows={3}
+            maxLength={300}
+          />
+          <div className="text-right text-sm text-gray-400 mt-1">
+            {excerpt.length}/300
           </div>
         </div>
 
