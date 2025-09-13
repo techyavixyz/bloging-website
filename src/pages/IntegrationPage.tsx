@@ -1,29 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { apiService } from '../services/api';
 import { Linkedin, Github, Save, ExternalLink } from 'lucide-react';
 
 const IntegrationPage: React.FC = () => {
-  const { user, updateUser } = useAuth();
   const [formData, setFormData] = useState({
-    name: '',
-    bio: '',
-    linkedin_url: '',
-    github_url: '',
+    name: 'John Doe',
+    bio: 'Full-stack developer passionate about React, TypeScript, and modern web technologies.',
+    linkedin_url: 'https://linkedin.com/in/johndoe',
+    github_url: 'https://github.com/johndoe',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
-
-  useEffect(() => {
-    if (user) {
-      setFormData({
-        name: user.name || '',
-        bio: user.bio || '',
-        linkedin_url: user.linkedin_url || '',
-        github_url: user.github_url || '',
-      });
-    }
-  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,8 +17,8 @@ const IntegrationPage: React.FC = () => {
     setMessage('');
 
     try {
-      const updatedUser = await apiService.updateUserProfile(formData);
-      updateUser(updatedUser);
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
       setMessage('Profile updated successfully!');
     } catch (error) {
       setMessage('Failed to update profile. Please try again.');
@@ -155,7 +141,7 @@ const IntegrationPage: React.FC = () => {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Preview</h3>
               <div className="flex items-start space-x-4">
                 <img
-                  src={user?.avatar || 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150'}
+                  src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150"
                   alt={formData.name}
                   className="w-16 h-16 rounded-full object-cover"
                 />

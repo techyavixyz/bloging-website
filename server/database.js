@@ -17,8 +17,8 @@ db.exec(`
     bio TEXT,
     linkedin_url TEXT,
     github_url TEXT,
-    provider TEXT NOT NULL,
-    provider_id TEXT NOT NULL,
+    provider TEXT DEFAULT 'local',
+    provider_id TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
@@ -61,6 +61,18 @@ db.exec(`
     FOREIGN KEY (post_id) REFERENCES posts (id),
     UNIQUE(user_id, post_id),
     UNIQUE(ip_address, post_id)
+  );
+
+  -- Insert default author if not exists
+  INSERT OR IGNORE INTO users (id, email, name, avatar, bio, linkedin_url, github_url)
+  VALUES (
+    'default-author',
+    'author@example.com',
+    'John Doe',
+    'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150',
+    'Full-stack developer passionate about React, TypeScript, and modern web technologies.',
+    'https://linkedin.com/in/johndoe',
+    'https://github.com/johndoe'
   );
 `);
 

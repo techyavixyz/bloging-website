@@ -1,95 +1,52 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+import { mockPosts, mockAuthor } from '../data/mockData';
 
 class ApiService {
-  private getAuthHeaders() {
-    const token = localStorage.getItem('auth_token');
-    return {
-      'Content-Type': 'application/json',
-      ...(token && { Authorization: `Bearer ${token}` }),
-    };
-  }
-
-  async request(endpoint: string, options: RequestInit = {}) {
-    const url = `${API_URL}${endpoint}`;
-    const config = {
-      headers: this.getAuthHeaders(),
-      ...options,
-    };
-
-    const response = await fetch(url, config);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    return response.json();
-  }
-
-  // Auth
-  async loginWithGoogle(token: string) {
-    return this.request('/api/auth/google', {
-      method: 'POST',
-      body: JSON.stringify({ token }),
-    });
-  }
-
-  async loginWithGitHub(code: string) {
-    return this.request('/api/auth/github', {
-      method: 'POST',
-      body: JSON.stringify({ code }),
-    });
-  }
-
-  // User
-  async getUserProfile() {
-    return this.request('/api/user/profile');
-  }
-
+  // Mock API methods for demo purposes
   async updateUserProfile(data: any) {
-    return this.request('/api/user/profile', {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    });
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    return { ...mockAuthor, ...data };
   }
 
   // Posts
   async getPosts() {
-    return this.request('/api/posts');
+    return mockPosts;
   }
 
   async getPost(id: string) {
-    return this.request(`/api/posts/${id}`);
+    return mockPosts.find(post => post.id === id);
   }
 
   async getAuthorPosts() {
-    return this.request('/api/author/posts');
+    return mockPosts;
   }
 
   async createPost(data: any) {
-    return this.request('/api/posts', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
+    // Simulate creating a new post
+    const newPost = {
+      id: Date.now().toString(),
+      ...data,
+      author: mockAuthor,
+      publishedAt: new Date(),
+      likes: 0,
+      comments: 0,
+    };
+    return newPost;
   }
 
   async updatePost(id: string, data: any) {
-    return this.request(`/api/posts/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    });
+    // Simulate updating a post
+    return { ...data, id };
   }
 
   async deletePost(id: string) {
-    return this.request(`/api/posts/${id}`, {
-      method: 'DELETE',
-    });
+    // Simulate deleting a post
+    return { success: true };
   }
 
   async likePost(id: string, userId?: string) {
-    return this.request(`/api/posts/${id}/like`, {
-      method: 'POST',
-      body: JSON.stringify({ userId }),
-    });
+    // Simulate liking a post
+    return { success: true };
   }
 }
 
